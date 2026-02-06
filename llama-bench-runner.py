@@ -35,6 +35,8 @@ from rich.console import Console, Group
 from rich.progress import Progress, SpinnerColumn, TextColumn, BarColumn, TimeElapsedColumn
 from rich.table import Table
 from rich.live import Live
+from rich.panel import Panel
+from rich.text import Text
 from rich import box
 
 # =============================================
@@ -104,8 +106,31 @@ class BenchmarkVisualizer:
         )
         self.task_id = self.progress.add_task("Running Benchmarks...", total=total_runs_per_config)
 
-    def generate_display(self) -> Table:
+        self.system_info = None
+
+    def generate_display(self) -> Group:
         """Generate the minimalist table display"""
+        
+        # System Info Header
+        header_group = []
+        if self.system_info:
+            gpu = self.system_info.get("gpu_info", "Unknown GPU")
+            backend = self.system_info.get("backends", "Unknown Backend")
+            
+            # Helper to clean up GPU info string (take first if comma separated)
+            if "," in gpu:
+                main_gpu = self.system_info.get("main_gpu", 0)
+                try:
+                    gpu_list = [g.strip() for g in gpu.split(',')]
+                    if 0 <= main_gpu < len(gpu_list):
+                        gpu = gpu_list[main_gpu]
+                except:
+                    pass
+            
+            info_text = Text(f"Device: {gpu} | Backend: {backend}", style="bold cyan")
+            header_group.append(Panel(info_text, box=box.SIMPLE, expand=False, border_style="dim"))
+
+        # Results Table
         table = Table(box=box.SIMPLE, show_header=True, header_style="bold dim", padding=(0, 2), expand=True)
         table.add_column("KV Config", style="white")
         table.add_column("Batch", justify="right", style="dim")
@@ -117,7 +142,7 @@ class BenchmarkVisualizer:
         for res in self.results_history[-10:]:
             self._add_result_row(table, res)
             
-        return table
+        return Group(*header_group, table)
 
     def _add_result_row(self, table: Table, res: dict):
         kv = res['kv']
@@ -137,6 +162,12 @@ class BenchmarkVisualizer:
         table.add_row(kv, batch, io, depth, speed_str)
 
     def update_result(self, result_json, kv_str):
+        if not self.system_info:
+            self.system_info = {
+                "gpu_info": result_json.get("gpu_info", ""),
+                "backends": result_json.get("backends", ""),
+                "main_gpu": result_json.get("main_gpu", 0)
+            }
         n_prompt = result_json.get("n_prompt", 0)
         n_gen = result_json.get("n_gen", 0)
         n_depth = result_json.get("n_depth", 0)
