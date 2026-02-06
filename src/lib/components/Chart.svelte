@@ -227,6 +227,7 @@
             },
             yAxis: {
                 type: "value",
+                scale: true,
                 name: "Speed (tokens/sec)",
                 nameLocation: "middle",
                 nameGap: 45,
