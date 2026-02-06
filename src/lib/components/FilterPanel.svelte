@@ -43,15 +43,23 @@
 
             <!-- PRIMARY: GPU, Model, Backend -->
             <div class="section primary">
-                <div class="section-item">
-                    <span class="label">GPU</span>
-                    <select class="form-select" bind:value={dashboard.selectedGpu}>
-                        <option value={null}>All GPUs</option>
-                        {#each dashboard.uniqueValues.gpus as gpu}
-                            <option value={gpu}>{gpu}</option>
-                        {/each}
-                    </select>
-                </div>
+                <FilterSection
+                    title="GPU"
+                    options={dashboard.uniqueValues.gpus}
+                    selected={dashboard.uniqueValues.gpus.filter((g) => dashboard.selectedGpus.includes(g))}
+                    onSelect={(g) => {
+                        dashboard.selectedGpus = dashboard.toggleFilterItem(dashboard.selectedGpus, g);
+                    }}
+                >
+                    {#snippet actions()}
+                        <button
+                            class="text-btn"
+                            onclick={() => (dashboard.selectedGpus = [...dashboard.uniqueValues.gpus])}>All</button
+                        >
+                        <span class="divider">/</span>
+                        <button class="text-btn" onclick={() => (dashboard.selectedGpus = [])}>None</button>
+                    {/snippet}
+                </FilterSection>
 
                 <FilterSection
                     title="Models"

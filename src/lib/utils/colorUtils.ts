@@ -222,7 +222,7 @@ export function buildColorContext(
     data: Array<{ model_type: string; gpu_info: string; backends: string; n_depth: number; type_k: string; type_v: string }>,
     filterState: {
         selectedModels: string[];
-        selectedGpu: string | null;
+        selectedGpus: string[];
         selectedBackends: string[];
         selectedDepths: number[];
         selectedKvTypes: string[];

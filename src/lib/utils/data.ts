@@ -34,7 +34,7 @@ export interface BenchmarkResult {
 // Filter configuration
 export interface FilterConfig {
     // Fixed filters (single select)
-    gpu_info: string | null;
+    gpu_info: string[]; // Changed to multi-select
     n_batch: number | null;
     n_ubatch: number | null;
     // Comparison filters (multi select)
@@ -99,7 +99,8 @@ export function extractUniqueValues(data: BenchmarkResult[]) {
 export function filterData(data: BenchmarkResult[], config: FilterConfig): BenchmarkResult[] {
     return data.filter(d => {
         // Fixed filters
-        if (config.gpu_info && d.gpu_info !== config.gpu_info) return false;
+        // Fixed filters
+        if (config.gpu_info.length > 0 && !config.gpu_info.includes(d.gpu_info)) return false;
         if (config.model_types.length > 0 && !config.model_types.includes(d.model_type)) return false;
         if (config.n_batch && d.n_batch !== config.n_batch) return false;
         if (config.n_ubatch && d.n_ubatch !== config.n_ubatch) return false;

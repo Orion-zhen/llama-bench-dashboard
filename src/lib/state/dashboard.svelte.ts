@@ -18,7 +18,7 @@ export class DashboardState {
     logScale = $state(true);
 
     // Filter State
-    selectedGpu = $state<string | null>(null);
+    selectedGpus = $state<string[]>([]);
     selectedModels = $state<string[]>([]);
     selectedBatch = $state<number | null>(null);
     selectedUbatch = $state<number | null>(null);
@@ -35,7 +35,7 @@ export class DashboardState {
 
     // Derived: Filter Config
     filterConfig = $derived<FilterConfig>({
-        gpu_info: this.selectedGpu,
+        gpu_info: this.selectedGpus,
         model_types: this.selectedModels,
         n_batch: this.selectedBatch,
         n_ubatch: this.selectedUbatch,
@@ -55,7 +55,7 @@ export class DashboardState {
     // Derived: Color Context
     colorContext = $derived<ColorContext>(buildColorContext(this.filteredData, {
         selectedModels: this.selectedModels,
-        selectedGpu: this.selectedGpu,
+        selectedGpus: this.selectedGpus,
         selectedBackends: this.selectedBackends,
         selectedDepths: this.selectedDepths,
         selectedKvTypes: this.selectedKvTypes
@@ -87,6 +87,9 @@ export class DashboardState {
         if (this.selectedModels.length === 0 && this.uniqueValues.models.length > 0) {
             this.selectedModels = [...this.uniqueValues.models];
         }
+        if (this.selectedGpus.length === 0 && this.uniqueValues.gpus.length > 0) {
+            this.selectedGpus = [...this.uniqueValues.gpus];
+        }
         if (this.selectedBackends.length === 0 && this.uniqueValues.backends.length > 0) {
             this.selectedBackends = [...this.uniqueValues.backends];
         }
@@ -102,7 +105,7 @@ export class DashboardState {
     }
 
     resetFilters() {
-        this.selectedGpu = null;
+        this.selectedGpus = [...this.uniqueValues.gpus];
         this.selectedBatch = null;
         this.selectedUbatch = null;
         // Reset multi-selects to ALL
