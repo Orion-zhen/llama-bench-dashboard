@@ -126,7 +126,7 @@ export function getTGData(data: BenchmarkResult[]): BenchmarkResult[] {
 
 // Generate series key for grouping
 export function getSeriesKey(d: BenchmarkResult): string {
-    return `${d.backends} | ${d.type_k}/${d.type_v} | depth=${d.n_depth}`;
+    return `${d.gpu_info} | ${d.backends} | ${d.type_k}/${d.type_v} | depth=${d.n_depth}`;
 }
 
 // Group data by series key
